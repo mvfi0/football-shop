@@ -11,7 +11,8 @@ Finally, I prepared the project for deployment to Pacil Web Service (PWS). This 
 
 2. Create a diagram showing the client request to the Django-based web application and its response, and explain the relationship between urls.py, views.py, models.py, and the HTML file in the diagram.
 
-Diagram: ![Django Request-Response Flow](images/image.png)
+Diagram: 
+![Django Request-Response Flow](images/image.png)
 
 HTTP Request → urls.py: When a client (browser) makes a request, Django first checks urls.py. This file acts like a traffic controller — it decides which view should handle the incoming URL.
 
