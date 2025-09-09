@@ -1,4 +1,4 @@
-Link to PWS: https://muhammad-vegard-footballshop.pbp.cs.ui.ac.id/
+Link to PWS: https://pbp.cs.ui.ac.id/web/project/muhammad.vegard/footballshop
 
 1. Explain how you implemented the checklist above step-by-step:
 
