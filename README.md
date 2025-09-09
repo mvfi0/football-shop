@@ -1,3 +1,2 @@
-Name: Pak Bepe
-Student ID: 2401234567
-Class: PBP 
+1. Explain how you implemented the checklist above step-by-step:
+    
