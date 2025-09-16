@@ -1,12 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ app_name }}</title>
-</head>
-<body>
-  <h1>Welcome to {{ app_name }}</h1>
-  <p><strong>Name:</strong> {{ student_name }}</p>
-  <p><strong>Class:</strong> {{ student_class }}</p>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<h1>Football Shop</h1>
+
+<!-- Add Product button -->
+<a href="{% url 'main:add_object' %}" class="btn">Add Product</a>
+
+<hr>
+
+{% if objects %}
+  {% for p in objects %}
+    <div style="margin-bottom:1.25rem">
+      <h2>
+        <a href="{% url 'main:detail_object' p.id %}">{{ p.name }}</a>
+        {% if p.is_featured %}<span>★ Featured</span>{% endif %}
+      </h2>
+
+      <p>Category: {{ p.category }} | Price: {{ p.price|floatformat:0 }}</p>
+
+      {% if p.thumbnail %}
+        <img src="{{ p.thumbnail }}" alt="{{ p.name }} thumbnail" width="150" height="100">
+      {% else %}
+        <img src="https://via.placeholder.com/150x100?text=No+Image" alt="No image" width="150" height="100">
+      {% endif %}
+
+      <p>{{ p.description|truncatewords:25 }}…</p>
+
+      <a href="{% url 'main:detail_object' p.id %}" class="btn">Detail</a>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No products available yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,3 +1,4 @@
+### ASSIGNMENT 2
 Link to PWS: https://pbp.cs.ui.ac.id/web/project/muhammad.vegard/footballshop
 
 1. Explain how you implemented the checklist above step-by-step:
@@ -59,3 +60,78 @@ In my opinion, Django gives a beginners a complete, structured, and practical en
 6. Do you have any feedback for the teaching assistant for Tutorial 1 that you previously completed?
 
 So far, the explanation for the tutorial is clear, easy to understand.
+
+
+### ASSIGNMENT 3
+
+### 1. Why do we need data delivery in implementing a platform?
+Data delivery is essential because platforms often consist of multiple components (frontend, backend, databases, third-party services) that need to communicate. By delivering data in a structured format (such as JSON or XML), platforms can exchange information consistently, enabling interoperability, scalability, and real-time updates between different systems.
+
+---
+
+### 2. In your opinion, which is better, XML or JSON? Why is JSON more popular than XML?
+JSON is generally better for modern applications because it is lightweight, human-readable, and directly compatible with JavaScript (commonly used in web development). JSON also requires less storage and bandwidth compared to XML.  
+
+XML, while more verbose, is useful in scenarios requiring strict document validation and complex data structures.  
+
+✅ JSON is more popular today because most APIs, mobile apps, and web apps prioritize speed and simplicity.
+
+---
+
+### 3. What is the purpose of the `is_valid()` method in Django forms, and why do we need it?
+The `is_valid()` method checks whether the data entered into a form meets the validation rules defined by the form and model fields.  
+
+- It ensures that the submitted data is **safe, complete, and correctly formatted** before saving it to the database.  
+- Without `is_valid()`, invalid or malicious data could break the application or compromise security.  
+
+---
+
+### 4. Why do we need a `csrf_token` when making forms in Django?  
+The `csrf_token` (Cross-Site Request Forgery token) protects Django applications from **CSRF attacks**, where a malicious site tricks a logged-in user into submitting unwanted requests (e.g., transferring money, deleting data).  
+
+- If we don’t include a `csrf_token`, attackers can forge requests on behalf of users without their knowledge.  
+- This can lead to **compromised user accounts and data integrity**.  
+
+---
+
+### 5. Explain how you implemented the checklist above step-by-step
+1. Defined the `Product` model with attributes like `name`, `price`, `category`, etc.  
+2. Created views to return data in **JSON** and **XML** formats, including filtering by ID.  
+3. Added **URL routes** for each new view.  
+4. Built a product listing page (`main.html`) with **"Add"** and **"Detail"** buttons.  
+5. Implemented a form page (`create_product.html`) for adding new products using Django forms.  
+6. Created a detail page (`product_detail.html`) to display full product info.  
+7. Tested the API endpoints in **Postman** and confirmed responses for JSON, XML, and by ID.  
+8. Committed and pushed the final version to GitHub, and linked screenshots in the README.  
+
+---
+
+### 6. Do you have any feedback for the teaching assistants for Tutorial 2?
+Actually, there is a minor mistake in the Tutorial **“Creating Data Input Form and Displaying Football News Data on HTML”** section, step no. 3.  
+
+The tutorial shows this code:
+```python
+urlpatterns = [
+    path('', show_main, name='show_main')
+    path('create-news/', create_news, name='create_news'),
+    path('news/<str:id>/', show_news, name='show_news'),
+]
+```
+Right after "path('', show_main, name='show_main')" there should be a comma. Since the tutorial skipped it, I ran into an error and had a small panic before realizing to fix.
+
+###  Postman Screenshots
+
+Below are the results of accessing the four URLs using Postman:
+
+- **XML**  
+  ![XML Screenshot](images/XML.jpg)
+
+- **XML by ID**  
+  ![XML_1 Screenshot](images/XML_1.jpg)
+
+- **JSON**  
+  ![JSON Screenshot](images/JSON.jpg)
+
+- **JSON by ID**  
+  ![JSON_1 Screenshot](images/JSON_1.jpg)
+
