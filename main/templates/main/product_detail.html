@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>
+  <a href="{% url 'main:object_list' %}">
+    <button>← Back to Product List</button>
+  </a>
+</p>
+
+<h1>{{ product.name }}</h1>
+
+<p><b>Category:</b> {{ product.category }}</p>
+<p><b>Price:</b> {{ product.price|floatformat:0 }}</p>
+
+{% if product.thumbnail %}
+  <img src="{{ product.thumbnail }}" alt="{{ product.name }} thumbnail" width="300">
+{% endif %}
+
+<p><b>Description:</b> {{ product.description }}</p>
+
+{% if product.stock %}<p><b>Stock:</b> {{ product.stock }}</p>{% endif %}
+{% if product.rating %}<p><b>Rating:</b> {{ product.rating }}</p>{% endif %}
+{% if product.brand %}<p><b>Brand:</b> {{ product.brand }}</p>{% endif %}
+{% endblock %}
