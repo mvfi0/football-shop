@@ -1,4 +1,4 @@
-~~ASSIGNMENT 2~~
+### ASSIGNMENT 2
 Link to PWS: https://pbp.cs.ui.ac.id/web/project/muhammad.vegard/footballshop
 
 1. Explain how you implemented the checklist above step-by-step:
@@ -62,7 +62,7 @@ In my opinion, Django gives a beginners a complete, structured, and practical en
 So far, the explanation for the tutorial is clear, easy to understand.
 
 
-~~ASSIGNMENT 3~~
+### ASSIGNMENT 3
 
 ### 1. Why do we need data delivery in implementing a platform?
 Data delivery is essential because platforms often consist of multiple components (frontend, backend, databases, third-party services) that need to communicate. By delivering data in a structured format (such as JSON or XML), platforms can exchange information consistently, enabling interoperability, scalability, and real-time updates between different systems.
@@ -116,10 +116,10 @@ urlpatterns = [
     path('create-news/', create_news, name='create_news'),
     path('news/<str:id>/', show_news, name='show_news'),
 ]
-
+```
 Right after "path('', show_main, name='show_main')" there should be a comma. Since the tutorial skipped it, I ran into an error and had a small panic before realizing to fix.
 
-##  Postman Screenshots
+###  Postman Screenshots
 
 Below are the results of accessing the four URLs using Postman:
 
