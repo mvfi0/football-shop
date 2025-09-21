@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load currency %}
+
 
 {% block content %}
 <p>
@@ -10,7 +12,7 @@
 <h1>{{ product.name }}</h1>
 
 <p><b>Category:</b> {{ product.category }}</p>
-<p><b>Price:</b> {{ product.price|floatformat:0 }}</p>
+<p><b>Price:</b> {{ product.price|rupiah }}</p>
 
 {% if product.thumbnail %}
   <img src="{{ product.thumbnail }}" alt="{{ product.name }} thumbnail" width="300">
@@ -21,4 +23,12 @@
 {% if product.stock %}<p><b>Stock:</b> {{ product.stock }}</p>{% endif %}
 {% if product.rating %}<p><b>Rating:</b> {{ product.rating }}</p>{% endif %}
 {% if product.brand %}<p><b>Brand:</b> {{ product.brand }}</p>{% endif %}
+
+<!-- Product Seller's Name -->
+{% if product.user %}
+  <p><b>Seller:</b> {{ product.user.username }}</p>
+{% else %}
+  <p><b>Seller:</b> Anonymous</p>
+{% endif %}
+
 {% endblock %}

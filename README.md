@@ -135,3 +135,100 @@ Below are the results of accessing the four URLs using Postman:
 - **JSON by ID**  
   ![JSON_1 Screenshot](images/JSON_1.jpg)
 
+
+## Assignment 4: Authentication, Session, Cookies, and Selenium
+
+### 1. What is Django's `AuthenticationForm`? Explain its advantages and disadvantages.
+`AuthenticationForm` is a built-in Django form used for handling user login. It checks the provided username and password against Django’s authentication backend.
+
+**Advantages:**
+- Saves development time because it is pre-built and ready to use.
+- Secure by default (handles password hashing and validation).
+- Easy integration with Django’s `LoginView` and custom views.
+- Automatically shows useful error messages (e.g., “invalid username or password”).
+
+**Disadvantages:**
+- Limited customization out of the box (must be subclassed for custom styling or fields).
+- Tightly coupled with Django’s default authentication system.
+- Might not fit projects needing OAuth, JWT, or other external authentication flows.
+
+---
+
+### 2. What is the difference between authentication and authorization? How does Django implement the two concepts?
+- **Authentication**: Process of verifying a user’s identity (e.g., logging in with username/password).  
+- **Authorization**: Process of deciding what an authenticated user is allowed to do (permissions, groups, roles).  
+
+**In Django:**
+- Authentication is handled by `django.contrib.auth`, with models like `User` and built-in views/forms such as `AuthenticationForm`.
+- Authorization is handled by Django’s **permissions** (`is_staff`, `is_superuser`, or custom model permissions) and **decorators** like `@login_required` or `@permission_required`.
+
+---
+
+### 3. What are the benefits and drawbacks of using sessions and cookies in storing the state of a web application?
+**Benefits:**
+- Allow persistence of user state across requests (e.g., stay logged in).
+- Sessions are stored server-side, while cookies only hold a session ID → safer than storing full data in cookies.
+- Cookies enable features like “Remember Me” and shopping carts.
+
+**Drawbacks:**
+- Sessions require storage (database, cache, or file system).
+- Cookies can be stolen (via XSS) or intercepted if not secured with HTTPS.
+- Improper session handling can lead to security risks (e.g., session fixation).
+
+---
+
+### 4. In web development, is the usage of cookies secure by default, or is there any potential risk that we should be aware of? How does Django handle this problem?
+- Cookies **are not secure by default**. Risks include:
+  - **XSS attacks** stealing cookies.
+  - **Session hijacking** if cookies are sent over HTTP instead of HTTPS.
+- **How Django handles this:**
+  - Supports `HttpOnly` cookies → prevents JavaScript access.
+  - Supports `Secure` flag → cookies only sent over HTTPS.
+  - Session framework stores sensitive data on the server, only session keys go into cookies.
+  - Built-in CSRF protection to prevent cross-site request forgery.
+
+---
+
+### 5. Explain how you implemented the checklist above step-by-step (not just following the tutorial).
+1. Implemented user authentication (`login_user`, `logout_user`, `register` views) using Django’s `AuthenticationForm`.
+2. Created login, register, and logout templates and linked them with URLs.
+3. Added session tracking using `request.COOKIES['last_login']` and displayed it in the main page.
+4. Applied `@login_required` to restrict product list access only to authenticated users.
+5. Modified templates (`main.html`, `product_detail.html`) to show seller info, last login, and filter buttons (All / My Products).
+6. Added a custom template filter `rupiah` to format product prices into Indonesian Rupiah.
+7. Tested login, logout, and cookies behavior to ensure sessions update correctly.
+
+---
+
+
+## 📌 Changelog
+
+All notable changes to this project will be documented in this section.
+
+### [1.3.0] - 2025-09-21
+- Added custom Rupiah currency filter (`{{ value|rupiah }}`) for price formatting
+- Changed “Author” label to “Seller” in product details
+- Implemented product list filter (All Products / My Products)
+- Added `last_login` session tracking in main page
+
+### [1.2.0] - 2025-09-14
+- Added product detail page with:
+  - Thumbnail image
+  - Stock, rating, and brand display
+  - Linked each product to its seller (user)
+- Updated templates to show seller info
+
+### [1.1.0] - 2025-09-07
+- Implemented authentication features:
+  - User login and logout
+  - Registration form with validation
+  - Session and cookies handling
+- Protected main product list with `@login_required`
+
+### [1.0.0] - 2025-08-28
+- Initial project setup (Tutorials 0–2):
+  - Configured Git & Django project
+  - Created base Django app (`main`)
+  - Implemented first models (`Product`)
+  - Added product creation form and object listing
+  - Integrated database (SQLite3)

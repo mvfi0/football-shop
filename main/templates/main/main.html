@@ -1,11 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load currency %}
+
 <h1>Football Shop</h1>
 
 <!-- Add Product button -->
 <a href="{% url 'main:add_object' %}" class="btn">Add Product</a>
 
 <hr>
+
+<a href="{% url 'main:logout' %}">
+  <button>Logout</button>
+</a>
+
+<h5>Last login session: {{ last_login }}</h5>
+
+<!-- Filter buttons -->
+<a href="?filter=all">
+  <button type="button">All Products</button>
+</a>
+<a href="?filter=my">
+  <button type="button">My Products</button>
+</a>
 
 {% if objects %}
   {% for p in objects %}
@@ -15,7 +31,7 @@
         {% if p.is_featured %}<span>★ Featured</span>{% endif %}
       </h2>
 
-      <p>Category: {{ p.category }} | Price: {{ p.price|floatformat:0 }}</p>
+      <p>Category: {{ p.category }} | Price: {{ p.price|rupiah }}</p>
 
       {% if p.thumbnail %}
         <img src="{{ p.thumbnail }}" alt="{{ p.name }} thumbnail" width="150" height="100">
