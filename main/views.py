@@ -8,29 +8,43 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 import datetime
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 @login_required(login_url='/login')
 def object_list(request):
-    filter_type = request.GET.get("filter", "all")  # default 'all'
+    qs = Product.objects.all()
 
-    if filter_type == "all":
-        products = Product.objects.all()
-    else:
-        products = Product.objects.filter(user=request.user)
+    # --- All / My products filter ------------------------------------------
+    filter_type = request.GET.get('filter', 'all')
+    if filter_type == 'my' and request.user.is_authenticated:
+        qs = qs.filter(user=request.user)
+
+    # --- Category filter -----------------------------------------------------
+    # Accept either the stored value (e.g. 'shoes') or a label (e.g. 'Shoes').
+    category_param = (request.GET.get('category') or '').strip()
+    if category_param:
+        values = {v for v, _ in Product.CATEGORY_CHOICES}                      # {'shoes','apparel',...}
+        labels_to_values = {lbl.lower(): val for val, lbl in Product.CATEGORY_CHOICES}
+
+        candidate = category_param.lower()
+        if candidate in values:
+            qs = qs.filter(category=candidate)
+        elif candidate in labels_to_values:
+            qs = qs.filter(category=labels_to_values[candidate])
+        # else: unknown category → leave qs as-is
 
     context = {
-        "npm": "240123456",  # replace with your own ID if required
-        "name": request.user.username,
-        "class": "PBP A",
-        "objects": products,
-        "last_login": request.COOKIES.get("last_login", "Never"),
+        'object_list': qs,
+        'last_login': request.COOKIES.get('last_login', ''),
+        'active_filter': filter_type,
+        'active_category': (request.GET.get('category') or '').lower(),
+        'CATEGORY_CHOICES': Product.CATEGORY_CHOICES,   # used by template to render chips
     }
-    return render(request, "main/main.html", context)
+    return render(request, 'main/main.html', context)
 
-
-
+@login_required(login_url='/login/')
 def add_object(request):
     form = ProductForm(request.POST or None)
 
@@ -116,3 +130,25 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+
+def edit_object(request, id):
+    product = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance=product)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return redirect("main:object_list")
+
+    context = {
+        "form": form
+    }
+    return render(request, "main/edit_product.html", context)
+
+@login_required(login_url="/login")
+@require_POST
+def delete_object(request, id):
+    product = get_object_or_404(Product, pk=id)
+    if product.user != request.user:
+        return HttpResponseForbidden("You are not allowed to delete this product.")
+    product.delete()
+    return redirect("main:object_list")

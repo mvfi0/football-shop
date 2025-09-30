@@ -1,32 +1,57 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-<title>Login</title>
+<title>Login - Sports Universe</title>
 {% endblock meta %}
 
 {% block content %}
-<div class="login">
-  <h1>Login</h1>
+<div class="bg-gradient-to-br from-purple-900 via-indigo-900 to-black w-full min-h-screen flex items-center justify-center p-8">
+  <div class="max-w-md w-full">
+    <div class="bg-white/10 backdrop-blur-lg rounded-lg border border-purple-500/30 shadow-xl p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2">Sign In</h1>
+        <p class="text-purple-200">Welcome back to <span class="font-semibold">Sports Universe</span></p>
+      </div>
 
-  <form method="POST" action="">
-    {% csrf_token %}
-    <table>
-      {{ form.as_table }}
-      <tr>
-        <td></td>
-        <td><input class="btn login_btn" type="submit" value="Login" /></td>
-      </tr>
-    </table>
-  </form>
+      <form method="POST" action="" class="space-y-6">
+        {% csrf_token %}
 
-  {% if messages %}
-  <ul>
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %} Don't have an account yet?
-  <a href="{% url 'main:register' %}">Register Now</a>
+        <div>
+          <label for="username" class="block text-sm font-medium text-purple-200 mb-2">Username</label>
+          <input 
+            id="username" 
+            name="username" 
+            type="text" 
+            required 
+            class="w-full px-4 py-3 rounded-md bg-purple-950/50 text-white border border-purple-600 placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition" 
+            placeholder="Enter your username">
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-purple-200 mb-2">Password</label>
+          <input 
+            id="password" 
+            name="password" 
+            type="password" 
+            required 
+            class="w-full px-4 py-3 rounded-md bg-purple-950/50 text-white border border-purple-600 placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition" 
+            placeholder="Enter your password">
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium py-3 px-4 rounded-md hover:from-purple-700 hover:to-pink-600 transition">
+          Sign In
+        </button>
+      </form>
+
+      <div class="mt-6 text-center pt-6 border-t border-purple-500/30">
+        <p class="text-purple-200 text-sm">
+          Don’t have an account? 
+          <a href="{% url 'main:register' %}" class="text-pink-400 hover:text-pink-300 font-medium">Register Now</a>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
-
 {% endblock content %}

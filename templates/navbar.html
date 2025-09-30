@@ -1,0 +1,208 @@
+{% load static %}
+{# Safely get the active category from context or the URL #}
+{% if not filter_category %}
+{% with request.GET.category as filter_category %}{% endwith %}
+{% endif %}
+
+<nav class="fixed top-0 left-0 w-full z-50 border-b border-white/10 shadow-sm
+            bg-gradient-to-r from-indigo-700 via-purple-700 to-fuchsia-700">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="h-16 flex items-center justify-between">
+
+        <!-- Brand -->
+        <a href="{% url 'main:object_list' %}"
+            class="flex items-center gap-2 text-white">
+            <span class="text-2xl font-bold tracking-tight">Sports</span>
+            <span class="text-2xl font-bold tracking-tight text-fuchsia-200">Universe</span>
+        </a>
+
+        <!-- Desktop: primary nav -->
+        <div class="hidden md:flex items-center gap-6">
+
+            <!-- Home -->
+            <a href="{% url 'main:object_list' %}"
+            class="font-medium transition-colors
+                    {% if not filter_category %}text-white{% else %}text-violet-100 hover:text-white{% endif %}">
+            Home
+            </a>
+
+            <!-- Add product (only if logged in) -->
+            {% if user.is_authenticated %}
+            <a href="{% url 'main:add_object' %}"
+                class="font-medium transition-colors text-violet-100 hover:text-white">
+                Add Product
+            </a>
+            {% endif %}
+
+            <!-- Category links -->
+            <a href="?category=Shoes"
+            class="font-medium transition-colors
+                    {% if filter_category == 'Shoes' %}text-white{% else %}text-violet-200 hover:text-white{% endif %}">
+            Shoes
+            </a>
+
+            <a href="?category=Apparel"
+            class="font-medium transition-colors
+                    {% if filter_category == 'Apparel' %}text-white{% else %}text-violet-200 hover:text-white{% endif %}">
+            Apparel
+            </a>
+
+            <a href="?category=Hardware"
+            class="font-medium transition-colors
+                    {% if filter_category == 'Hardware' %}text-white{% else %}text-violet-200 hover:text-white{% endif %}">
+            Hardware
+            </a>
+
+            <a href="?category=Stores"
+            class="font-medium transition-colors
+                    {% if filter_category == 'Stores' %}text-white{% else %}text-violet-200 hover:text-white{% endif %}">
+            Stores
+            </a>
+
+            <a href="?category=Accessories"
+            class="font-medium transition-colors
+                    {% if filter_category == 'Accessories' %}text-white{% else %}text-violet-200 hover:text-white{% endif %}">
+            Accessories
+            </a>
+
+            <a href="?category=Balls"
+            class="font-medium transition-colors
+                    {% if filter_category == 'Balls' %}text-white{% else %}text-violet-200 hover:text-white{% endif %}">
+            Balls
+            </a>
+        </div>
+
+        <!-- Desktop: user section -->
+        <div class="hidden md:flex items-center gap-4">
+            {% if user.is_authenticated %}
+            <div class="text-right leading-tight">
+                <div class="text-white text-sm font-semibold">{{ user.username }}</div>
+                {% if last_login %}
+                <div class="text-violet-200 text-xs">Last login: {{ last_login }}</div>
+                {% endif %}
+            </div>
+            <a href="{% url 'main:logout' %}"
+                class="px-3 py-1.5 rounded-md bg-white/10 text-white hover:bg-white/20 transition">
+                Logout
+            </a>
+            {% else %}
+            <a href="{% url 'main:login' %}"
+                class="px-3 py-1.5 rounded-md text-white/90 hover:text-white transition">
+                Login
+            </a>
+            <a href="{% url 'main:register' %}"
+                class="px-3 py-1.5 rounded-md bg-fuchsia-500 text-white hover:bg-fuchsia-400 transition">
+                Register
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Mobile menu button -->
+        <button type="button"
+                class="md:hidden p-2 rounded text-white/90 hover:text-white hover:bg-white/10 transition
+                        mobile-menu-button"
+                aria-label="Toggle menu" aria-expanded="false">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+        </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu hidden md:hidden bg-gradient-to-b from-purple-800 to-fuchsia-800
+                border-t border-white/10">
+        <div class="px-6 py-4 space-y-1">
+
+        <a href="{% url 'main:object_list' %}"
+            class="block py-3 text-violet-100 hover:text-white font-medium
+                    {% if not filter_category %}text-white{% endif %}">
+            Home
+        </a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'main:add_object' %}"
+            class="block py-3 text-violet-100 hover:text-white font-medium">
+            Add Product
+            </a>
+        {% endif %}
+
+        <a href="?category=Shoes"
+            class="block py-3 font-medium
+                    {% if filter_category == 'Shoes' %}text-white{% else %}text-violet-100 hover:text-white{% endif %}">
+            Shoes
+        </a>
+
+        <a href="?category=Apparel"
+            class="block py-3 font-medium
+                    {% if filter_category == 'Apparel' %}text-white{% else %}text-violet-100 hover:text-white{% endif %}">
+            Apparel
+        </a>
+
+        <a href="?category=Hardware"
+            class="block py-3 font-medium
+                    {% if filter_category == 'Hardware' %}text-white{% else %}text-violet-100 hover:text-white{% endif %}">
+            Hardware
+        </a>
+
+        <a href="?category=Stores"
+            class="block py-3 font-medium
+                    {% if filter_category == 'Stores' %}text-white{% else %}text-violet-100 hover:text-white{% endif %}">
+            Stores
+        </a>
+
+        <a href="?category=Accessories"
+            class="block py-3 font-medium
+                    {% if filter_category == 'Accessories' %}text-white{% else %}text-violet-100 hover:text-white{% endif %}">
+            Accessories
+        </a>
+
+        <a href="?category=Balls"
+            class="block py-3 font-medium
+                    {% if filter_category == 'Balls' %}text-white{% else %}text-violet-100 hover:text-white{% endif %}">
+            Balls
+        </a>
+
+        <div class="pt-4 mt-2 border-t border-white/10">
+            {% if user.is_authenticated %}
+            <div class="mb-3">
+                <div class="text-white font-semibold">{{ user.username }}</div>
+                {% if last_login %}
+                <div class="text-violet-200 text-sm">Last login: {{ last_login }}</div>
+                {% endif %}
+            </div>
+            <a href="{% url 'main:logout' %}"
+                class="block py-3 text-red-200 hover:text-red-100 font-medium">
+                Logout
+            </a>
+            {% else %}
+            <a href="{% url 'main:login' %}"
+                class="block py-3 text-violet-100 hover:text-white font-medium">
+                Login
+            </a>
+            <a href="{% url 'main:register' %}"
+                class="block py-3 text-white font-medium">
+                <span class="inline-flex items-center px-3 py-2 rounded-md bg-fuchsia-500 hover:bg-fuchsia-400 transition">
+                Register
+                </span>
+            </a>
+            {% endif %}
+        </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    (function () {
+        const btn = document.querySelector('.mobile-menu-button');
+        const menu = document.querySelector('.mobile-menu');
+        if (!btn || !menu) return;
+        btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        });
+    })();
+</script>

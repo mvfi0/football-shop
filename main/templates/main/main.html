@@ -1,50 +1,171 @@
+{# main/templates/main/main.html #}
 {% extends 'base.html' %}
-{% block content %}
+{% load static %}
 {% load currency %}
 
-<h1>Football Shop</h1>
+{% block meta %}
+<title>Sports Universe</title>
+{% endblock meta %}
 
-<!-- Add Product button -->
-<a href="{% url 'main:add_object' %}" class="btn">Add Product</a>
+{% block content %}
+{% include 'navbar.html' %}
 
-<hr>
+<div class="min-h-screen bg-gradient-to-b from-[#0f0220] via-[#110025] to-[#16002b] text-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
+    <!-- Page header -->
+    <h1 class="text-3xl font-extrabold tracking-tight text-white">Sports Universe</h1>
+    <p class="text-sm text-violet-200 mt-2">
+      Explore curated gear across the galaxy 🚀
+    </p>
 
-<h5>Last login session: {{ last_login }}</h5>
+    <!-- Top controls: All/My + last login -->
+    <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4
+                bg-black/40 border border-fuchsia-900/40 rounded-xl px-4 py-3">
+      <div class="flex items-center gap-3">
+        <a href="?"
+            class="px-4 py-2 rounded-md font-semibold transition
+                {% if active_filter == 'all' or not active_filter %}
+                  bg-fuchsia-600 text-white
+                {% else %}
+                  bg-slate-800 text-slate-200 hover:bg-slate-700
+                {% endif %}">
+          All Products
+        </a>
 
-<!-- Filter buttons -->
-<a href="?filter=all">
-  <button type="button">All Products</button>
-</a>
-<a href="?filter=my">
-  <button type="button">My Products</button>
-</a>
+        <a href="?filter=my{% if active_category %}&category={{ active_category }}{% endif %}"
+            class="px-4 py-2 rounded-md font-semibold transition
+                {% if active_filter == 'my' %}
+                  bg-fuchsia-600 text-white
+                {% else %}
+                  bg-slate-800 text-slate-200 hover:bg-slate-700
+                {% endif %}">
+          My Products
+        </a>
+      </div>
 
-{% if objects %}
-  {% for p in objects %}
-    <div style="margin-bottom:1.25rem">
-      <h2>
-        <a href="{% url 'main:detail_object' p.id %}">{{ p.name }}</a>
-        {% if p.is_featured %}<span>★ Featured</span>{% endif %}
-      </h2>
-
-      <p>Category: {{ p.category }} | Price: {{ p.price|rupiah }}</p>
-
-      {% if p.thumbnail %}
-        <img src="{{ p.thumbnail }}" alt="{{ p.name }} thumbnail" width="150" height="100">
-      {% else %}
-        <img src="https://via.placeholder.com/150x100?text=No+Image" alt="No image" width="150" height="100">
-      {% endif %}
-
-      <p>{{ p.description|truncatewords:25 }}…</p>
-
-      <a href="{% url 'main:detail_object' p.id %}" class="btn">Detail</a>
+      <div class="text-xs md:text-sm text-violet-300">
+        Last login: {{ last_login }}
+      </div>
     </div>
-  {% endfor %}
-{% else %}
-  <p>No products available yet.</p>
-{% endif %}
-{% endblock %}
+
+    <!-- Category chips (built from CATEGORY_CHOICES) -->
+    <div class="mt-4 flex flex-wrap items-center gap-2">
+      {# "All" chip #}
+      <a href="?{% if active_filter == 'my' %}filter=my{% endif %}"
+          class="px-3 py-1.5 rounded-full text-sm font-medium border transition
+              {% if not active_category %}
+                bg-fuchsia-700 text-white border-fuchsia-600
+              {% else %}
+                bg-slate-800/70 text-violet-100 border-slate-700 hover:bg-slate-700
+              {% endif %}">
+        All
+      </a>
+
+      {% for value, label in CATEGORY_CHOICES %}
+        <a href="?category={{ value }}{% if active_filter == 'my' %}&filter=my{% endif %}"
+            class="px-3 py-1.5 rounded-full text-sm font-medium border transition capitalize
+                {% if active_category == value %}
+                  bg-fuchsia-700 text-white border-fuchsia-600
+                {% else %}
+                  bg-slate-800/70 text-violet-100 border-slate-700 hover:bg-slate-700
+                {% endif %}">
+          {{ label }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Product grid / empty state -->
+    {% if object_list %}
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {% for p in object_list %}
+          {# ---- Card (quick inline card to avoid extra file editing) ---- #}
+          <article class="rounded-2xl border border-fuchsia-900/40 bg-gradient-to-b
+                          from-[#140028]/80 to-[#0e001e]/80 shadow-xl overflow-hidden">
+
+            <!-- Thumb -->
+            <div class="aspect-[16/9] bg-slate-900/60">
+              {% if p.thumbnail %}
+                <img src="{{ p.thumbnail }}" alt="{{ p.name }}"
+                      class="w-full h-full object-cover">
+              {% endif %}
+            </div>
+
+            <div class="p-5">
+              <!-- Badges -->
+              <div class="flex items-center gap-2 mb-3">
+                {% if p.is_featured %}
+                  <span class="px-2 py-1 rounded-md text-xs font-semibold bg-fuchsia-600/20 text-fuchsia-300 border border-fuchsia-600/40">Featured</span>
+                {% endif %}
+                <span class="px-2 py-1 rounded-md text-xs font-medium bg-violet-500/15 text-violet-200 border border-violet-700/40">
+                  {{ p.get_category_display }}
+                </span>
+              </div>
+
+              <!-- Title -->
+              <h3 class="text-lg font-semibold text-violet-50 leading-snug">
+                <a href="{% url 'main:detail_object' p.id %}" class="hover:text-fuchsia-300 transition">
+                  {{ p.name }}
+                </a>
+              </h3>
+
+              <!-- Description -->
+              <p class="text-slate-300/90 text-sm mt-2 line-clamp-3">{{ p.description }}</p>
+
+              <!-- Price / rating / stock -->
+              <div class="flex items-center justify-between mt-4 text-sm text-slate-300">
+                <div class="font-semibold text-fuchsia-300">{{ p.price|rupiah }}</div>
+                <div class="flex items-center gap-4">
+                  {% if p.rating %}
+                    <span class="inline-flex items-center gap-1">
+                      ⭐ {{ p.rating }}
+                    </span>
+                  {% endif %}
+                  {% if p.stock is not None %}
+                    <span>Stock: {{ p.stock }}</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="mt-5 flex items-center justify-between">
+                <a href="{% url 'main:detail_object' p.id %}"
+                    class="text-fuchsia-300 hover:text-fuchsia-200 font-medium">
+                  Detail
+                </a>
+
+                {% if user.is_authenticated and p.user == user %}
+                <div class="flex items-center gap-3 text-sm">
+                  <a href="{% url 'main:edit_object' p.id %}" class="text-slate-300 hover:text-white">Edit</a>
+
+                  <form method="post" action="{% url 'main:delete_object' p.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="text-rose-400 hover:text-rose-300"
+                            onclick="return confirm('Delete this product?')">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+          {# ---- /Card ---- #}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="mt-8 rounded-2xl border border-fuchsia-900/40 bg-black/40 p-10 text-center">
+        <img src="{% static 'image/no-product.png' %}" alt="No products"
+              class="mx-auto w-40 h-40 object-contain opacity-90 mb-4">
+        <h3 class="text-xl font-semibold text-violet-100">No products yet</h3>
+        <p class="text-slate-300 mt-1">Be the first to add an item to the universe.</p>
+
+        <a href="{% url 'main:add_object' %}"
+            class="inline-block mt-6 px-5 py-3 rounded-lg bg-fuchsia-600 text-white font-semibold hover:bg-fuchsia-500 transition">
+          + Add Product
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}

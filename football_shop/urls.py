@@ -14,13 +14,25 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# sports_universe/urls.py   <-- project-level urls.py
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from pathlib import Path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('main.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("main.urls")),   # include your app urls
 ]
+
+# Serve static files during development
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.STATIC_URL,
+        document_root=Path(settings.BASE_DIR) / "static"
+    )
+
 
 
 

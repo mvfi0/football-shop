@@ -200,10 +200,106 @@ Below are the results of accessing the four URLs using Postman:
 
 ---
 
+## Assignment 5: CSS, Responsive Design, and Layout
 
+### 1. CSS Selector Priority  
+If multiple CSS selectors target the same HTML element, the **priority order** is:  
+1. **Inline styles** (`style="..."`) → highest priority.  
+2. **IDs** (`#id`).  
+3. **Classes, attributes, pseudo-classes** (`.class`, `[type=text]`, `:hover`).  
+4. **Elements and pseudo-elements** (`div`, `h1`, `::before`).  
+
+- If two rules have equal specificity, the **later rule** in the CSS wins.  
+- `!important` overrides all normal rules.  
+
+---
+
+### 2. Responsive Design  
+
+**Why is it important in web application development?**  
+- Ensures applications work on all devices (desktop, tablet, mobile).  
+- Improves **user experience** and accessibility.  
+- Prevents layout breaking (e.g., overflow, horizontal scrolling).  
+
+**Examples:**  
+- ✅ **Good:** Nike.com, Apple.com → fluid grids, responsive images, adaptive navigation.  
+- ❌ **Bad:** Older fixed-width sites → break on mobile screens, force zoom/scroll.  
+
+**Reason:**  
+Responsive design uses **media queries, flexible layouts, and scalable units**, while non-responsive sites rely on fixed pixel widths.  
+
+---
+
+### 3. Box Model  
+The CSS box model consists of:  
+- **Content** → text, image, or element content.  
+- **Padding** → space inside the element, between content and border.  
+- **Border** → line around the element’s padding and content.  
+- **Margin** → space outside the border, separating elements.  
+
+Example:  
+```css
+.card {
+  margin: 1rem;               /* outside spacing */
+  padding: 1rem;              /* inside spacing */
+  border: 2px solid #6d28d9;  /* border */
+  box-sizing: border-box;     /* predictable sizing */
+}
+```
+### 4. Layout Systems
+- **Flexbox** → one-dimensional layout (row or column). Best for navbars, toolbars, or evenly spaced elements.
+  ```css
+  .nav { display:flex; gap:1rem; justify-content:space-between; }
+  ```
+- **Grid** → two-dimensional layout (rows + columns). Best for dashboards, product listings, or galleries.
+  ```css
+  .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  }
+  ```
+### 5. Explain how you implemented the checklist above step-by-step (not just following the tutorial).  
+1. Updated **navbar** with new title *Sports Universe*, recolored using a **galaxy gradient**, and made it responsive with category filters (Shoes, Apparel, Hardware, Stores, Accessories, Balls).  
+2. Implemented **product list page** using **cards** with a dark galaxy background and bright content for contrast.  
+3. Handled empty state by adding a `no-product.png` image and message when no products exist.  
+4. Created a **category dropdown** in product form using `CATEGORY_CHOICES` with fallback option “Others”.  
+5. Fixed **case sensitivity** in categories (e.g., “Shoes” vs “shoes”) by normalizing user input before filtering.  
+6. Added and configured **custom `rupiah` template filter** in `templatetags/currency.py` for price formatting.  
+7. Applied **@login_required** to restrict Add, Edit, and Delete product access only to authenticated users.  
+8. Styled **login and register pages** with galaxy background while keeping form cards bright for readability.  
+9. Implemented **responsive grid** for products using CSS Grid with `auto-fit` and media queries.  
+10. Tested all filters (All / My Products, categories), empty state, and authentication flows to ensure functionality.  
+
+  
 ## 📌 Changelog
 
 All notable changes to this project will be documented in this section.
+
+### [1.4.0] - 2025-10-1
+- Updated Branding
+  - Football Shop -> Sports Universe
+- Theme
+  - Galaxy Theme Background
+  - Gradient navbar and consistent bright cards/forms
+- Navigation
+  - Responsive navbar with hamburger menu
+  - Added category links to navbar
+- Products
+  - Card layout (`card_product.html`) in responsive grid
+  - Empty state with image + CTA
+  - Category filter using Product.CATEGORY_CHOICES
+  - “All Products / My Products” filter
+- Forms & Details
+  - Category dropdown (no free text)
+  - Styled create/edit/detail pages
+- Auth & Permissions
+  - Protected add/edit/delete routes with `@login_required`
+  - Owner-only edit/delete buttons
+- Price Filter
+  - Rupiah currency filter implemented in `templatetags/currency.py`
+- Static Fixes
+  - Correct static file setup for images and CSS
 
 ### [1.3.0] - 2025-09-21
 - Added custom Rupiah currency filter (`{{ value|rupiah }}`) for price formatting

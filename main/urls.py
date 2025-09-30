@@ -1,5 +1,4 @@
 from django.urls import path
-from django.urls import path
 from .views import (
     object_list, 
     add_object, 
@@ -9,6 +8,8 @@ from .views import (
     show_xml_by_id, 
     show_json_by_id,
     register,
+    edit_object,
+    delete_object,
 )
 from main.views import login_user, logout_user
 
@@ -28,4 +29,7 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('login/', login_user, name='login'),
     path('logout/', logout_user, name='logout'),
+    
+    path("product/<int:id>/edit/", edit_object, name="edit_object"),
+    path('product/<int:id>/delete/', delete_object, name='delete_object'),
 ]
