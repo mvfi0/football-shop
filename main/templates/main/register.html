@@ -13,7 +13,7 @@
         <p class="text-purple-200">Join the <span class="text-pink-400 font-semibold">Sports Universe</span></p>
       </div>
 
-      <form method="POST" action="" class="space-y-6">
+      <form id="register-form" method="POST" action="{% url 'main:ajax_register' %}" class="space-y-6">
         {% csrf_token %}
 
         <div>
@@ -49,9 +49,11 @@
             placeholder="Confirm your password">
         </div>
 
+        <div id="form-errors" class="text-red-400 text-sm"></div>
+
         <button 
           type="submit" 
-          class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium py-3 px-4 rounded-md hover:from-purple-700 hover:to-pink-600 transition">
+          class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium py-3 px-4 rounded-md hover:from-purple-700 hover:to-pink-600 transition !mt-8">
           Create Account
         </button>
       </form>
@@ -66,3 +68,43 @@
   </div>
 </div>
 {% endblock content %}
+
+
+{% block script %}
+<script>
+$(document).ready(function() {
+    $('#register-form').on('submit', function(event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: $(this).serialize(),
+            
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert('Registration successful! Welcome to Sports Universe.');
+                    window.location.href = response.redirect_url;
+                }
+            },
+            error: function(xhr) {
+                const errorContainer = $('#form-errors');
+                errorContainer.empty();
+                
+                const errors = xhr.responseJSON.errors;
+                let errorHtml = '<p>Please correct the following errors:</p><ul class="list-disc list-inside mt-2">';
+                for (let field in errors) {
+                    const errorList = errors[field];
+                    errorList.forEach(function(error) {
+                        const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+                        errorHtml += `<li><strong>${fieldName.replace(/_/g, ' ')}:</strong> ${error}</li>`;
+                    });
+                }
+                errorHtml += '</ul>';
+                errorContainer.html(errorHtml);
+            }
+        });
+    });
+});
+</script>
+{% endblock script %}

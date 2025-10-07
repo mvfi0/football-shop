@@ -1,0 +1,60 @@
+<form
+    id="{{ form_id|default:'create-product-form' }}"
+    method="POST"
+    action="{{ action_url }}"
+    enctype="multipart/form-data"
+    class="space-y-5"
+    >
+    {% csrf_token %}
+
+    {# --- Field rendering --- #}
+    {% for field in form %}
+        <div class="flex flex-col">
+        <label
+            for="{{ field.id_for_label }}"
+            class="text-sm font-semibold text-fuchsia-300 mb-1"
+        >
+            {{ field.label }}
+        </label>
+
+        {{ field }}
+
+        {# Apply Tailwind styles to all widgets #}
+        <script>
+            (function() {
+            const el = document.getElementById('{{ field.id_for_label }}');
+            if (el) {
+                el.classList.add(
+                'bg-[#2b1844]', 'border', 'border-fuchsia-700/40', 'rounded-lg',
+                'text-white', 'placeholder-gray-400', 'focus:border-fuchsia-500',
+                'focus:ring-2', 'focus:ring-fuchsia-500/40', 'px-3', 'py-2',
+                'transition', 'duration-200', 'outline-none'
+                );
+            }
+            })();
+        </script>
+
+        {% if field.errors %}
+            <p class="text-sm text-rose-400 mt-1">
+            {{ field.errors|striptags }}
+            </p>
+        {% endif %}
+        </div>
+    {% endfor %}
+
+    <div id="form-errors" class="text-rose-500 mt-3 text-sm"></div>
+
+    {# --- Submit button --- #}
+    <div class="pt-4">
+        <button
+        type="submit"
+        class="w-full bg-gradient-to-r from-fuchsia-700 to-purple-700 hover:from-fuchsia-600 hover:to-purple-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
+        >
+        {% if form_id == 'update-product-form' %}
+            Save Changes
+        {% else %}
+            Create Product
+        {% endif %}
+        </button>
+    </div>
+</form>

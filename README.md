@@ -271,38 +271,214 @@ Example:
 9. Implemented **responsive grid** for products using CSS Grid with `auto-fit` and media queries.  
 10. Tested all filters (All / My Products, categories), empty state, and authentication flows to ensure functionality.  
 
+
+## Assignment 6: AJAX & Dynamic Interaction in Django
+
+### 1. What is the difference between synchronous request and asynchronous request?
+
+**Synchronous request**
+- The browser must wait until the server finishes processing and sends a response.
+- During this time, the page is blocked — users can’t interact or perform other actions.
+- Example: a normal HTML form submission that reloads the whole page.
+
+**Asynchronous request**
+- The request is made in the background using JavaScript (AJAX).
+- The page does not reload — only a specific part is updated dynamically.
+- Example: updating or deleting a product without leaving the page.
+
+**Summary:**
+
+| Type | Behavior | Page Reload | User Interaction |
+|------|-----------|--------------|------------------|
+| Synchronous | Waits for server response | Yes | Blocked |
+| Asynchronous | Non-blocking, background request | No | Responsive |
+
+---
+
+### 2. How does AJAX work in Django (request–response flow)?
+
+AJAX enables the frontend (JavaScript) and backend (Django) to communicate without full page reloads.
+
+**Flow:**
+
+1. The frontend (client) sends an AJAX request to a Django endpoint using `fetch()` or `$.ajax()`.
+
+   ```js
+   fetch('/ajax/delete_product/18/', {
+     method: 'POST',
+     headers: { 'X-CSRFToken': csrftoken }
+   });
+   ```
+
+2. The Django view receives the request, performs logic (create, update, delete, etc.), and returns a JSON response.
+
+   ```python
+   return JsonResponse({'status': 'success', 'message': 'Product deleted!'})
+   ```
+
+3. The frontend (JavaScript) receives the JSON response and updates the DOM — for example, removing a product card or showing a notification.
+
+**Result:**  
+The content updates instantly, with no full reload — smoother and faster user experience.
+
+---
+
+### 3. What are the advantages of using AJAX compared to regular rendering in Django?
+
+| Feature | Regular Rendering | AJAX Rendering |
+|----------|-------------------|----------------|
+| Page Reload | Full reload | Partial (no reload) |
+| Speed | Slower | Faster updates |
+| User Experience | Static | Dynamic and responsive |
+| Server Load | Renders full template | Sends only data (JSON) |
+| Interactivity | Limited | High — supports instant actions (like delete/edit) |
+
+**In short:**  
+AJAX makes Django apps feel like single-page applications (SPAs) — smooth, responsive, and modern.
+
+---
+
+### 4. How do you ensure security when using AJAX for Login and Register features in Django?
+
+**1. CSRF Protection**  
+All POST requests must include the CSRF token to prevent Cross-Site Request Forgery.
+
+```js
+headers: { 'X-CSRFToken': csrftoken }
+```
+
+**2. Authentication**  
+Use Django’s built-in methods to safely log in users.
+
+```python
+user = authenticate(username=username, password=password)
+login(request, user)
+```
+
+**3. Input Validation**  
+Always validate forms server-side (using Django’s `UserCreationForm` or custom forms).
+
+**4. Access Control**  
+Restrict endpoints to authorized users only.
+
+```python
+@login_required
+@require_POST
+```
+
+**5. Safe JSON Responses**  
+Return only safe, non-sensitive information to the client.
+
+```python
+return JsonResponse({'status': 'success'})
+```
+
+These ensure your AJAX endpoints remain secure and protected from unauthorized access.
+
+---
+
+### 5. How does AJAX affect user experience (UX) on websites?
+
+AJAX drastically improves UX by making interactions faster, smoother, and more intuitive.
+
+**Benefits:**
+- Instant updates: No page reloads after creating, editing, or deleting.
+- Continuous navigation: Users stay on the same page.
+- Better responsiveness: Real-time UI updates.
+- Instant feedback: Toast notifications and dynamic messages.
+- Reduced waiting time: Only relevant content updates, not the whole page.
+
+**Example:**  
+When a product is deleted using AJAX, the product card disappears immediately with a success message — no reload required.
+
+---
+
+### 6. How AJAX is implemented in this project
+
+In this Django project, AJAX is used in several key features:
+- Add Product (Create): Opens a modal form loaded via AJAX. On success, a new product appears instantly.
+- Edit Product (Update): Fetches the edit form dynamically and updates the product card without reloading.
+- Delete Product (Delete): Sends a background request to remove the product and instantly removes it from the list.
+- Refresh Button: Reloads the product grid using an AJAX call, displaying a loading spinner, empty state, or error message depending on the result.
+
+Each AJAX action provides real-time notifications, improving responsiveness and interactivity for the user.
+
+---
+
+### Summary
+
+| Aspect | AJAX Provides |
+|--------|----------------|
+| Efficiency | Only fetches or updates what’s necessary |
+| Performance | Faster response without reloading |
+| UX | Smooth, app-like interaction |
+| Security | Protected with CSRF, validation, and access control |
+| Implementation | Easy with `JsonResponse`, `fetch()`, and Django forms |
+
+---
+
+**Conclusion:**  
+AJAX transforms traditional Django pages into modern, interactive applications — enhancing user experience, reducing load times, and providing real-time updates while keeping Django’s security and simplicity intact.
+
   
 ## 📌 Changelog
 
 All notable changes to this project will be documented in this section.
 
+### [1.5.0] - 2025-10-08
+**New Features**
+  - Implemented full AJAX integration for product management (Create, Edit, Delete, Refresh).
+  - Added dynamic content updates without requiring a full page reload.
+  - Implemented real-time toast notifications for all product actions.
+
+**State Management**
+  - Added Loading state with animated spinner while fetching products.
+  - Added Empty state with image and message when no products exist.
+  - Added Error state for failed AJAX requests.
+  - Added Refresh button with proper state handling and visual feedback.
+
+**UI and UX Enhancements**
+  - Improved smoothness of product grid updates using AJAX DOM replacement.
+  - Added subtle transition effects for adding and removing product cards.
+  - Enhanced visual consistency with Tailwind color palette and shadows.
+
+**Code Improvements**
+  - Consolidated all AJAX logic into `main.js` for better maintainability.
+  - Refactored `base.html` to include reusable toast and loading components.
+  - Optimized event listener handling to avoid multiple triggers on Refresh.
+
+**Security and Backend**
+  - Added CSRF protection headers for all AJAX POST requests.
+  - Validated all form submissions via Django form classes.
+  - Updated AJAX endpoints (`ajax_create_product`, `ajax_update_product`, `ajax_delete_product`) for better error handling and consistent JSON responses.
+
 ### [1.4.1] - 2025-10-1
-- Visual Update
+**Visual Update**
   - Added Gradient animation on Universe in the word Sports Universe
 
 ### [1.4.0] - 2025-10-1
-- Updated Branding
+**Updated Branding**
   - Football Shop -> Sports Universe
-- Theme
+**Theme**
   - Galaxy Theme Background
   - Gradient navbar and consistent bright cards/forms
-- Navigation
+**Navigation**
   - Responsive navbar with hamburger menu
   - Added category links to navbar
-- Products
+**Products**
   - Card layout (`card_product.html`) in responsive grid
   - Empty state with image + CTA
   - Category filter using Product.CATEGORY_CHOICES
   - “All Products / My Products” filter
-- Forms & Details
+**Forms & Details**
   - Category dropdown (no free text)
   - Styled create/edit/detail pages
-- Auth & Permissions
+**Auth & Permissions**
   - Protected add/edit/delete routes with `@login_required`
   - Owner-only edit/delete buttons
-- Price Filter
+**Price Filter**
   - Rupiah currency filter implemented in `templatetags/currency.py`
-- Static Fixes
+**Static Fixes**
   - Correct static file setup for images and CSS
 
 ### [1.3.0] - 2025-09-21

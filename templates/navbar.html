@@ -123,10 +123,9 @@
         </a>
 
         {% if user.is_authenticated %}
-            <a href="{% url 'main:add_object' %}"
-            class="block py-3 text-violet-100 hover:text-white font-medium">
-            Add Product
-            </a>
+            <button type="button" id="add-product-btn" class="font-medium transition-colors text-violet-100 hover:text-white">
+                Add Product
+            </button>
         {% endif %}
 
         <a href="?category=Shoes"

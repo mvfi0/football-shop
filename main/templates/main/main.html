@@ -7,20 +7,21 @@
 <title>Sports Universe</title>
 {% endblock meta %}
 
+
 {% block content %}
 {% include 'navbar.html' %}
 
 <div class="min-h-screen bg-gradient-to-b from-[#0f0220] via-[#110025] to-[#16002b] text-slate-100">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    {% csrf_token %}
 
-    <!-- Page header -->
     <h1 class="text-3xl font-extrabold tracking-tight text-white">
       Sports <span class="gradient-text">Universe</span></h1>
     <p class="text-sm text-violet-200 mt-2">
       Explore curated gear across the galaxy 🚀
     </p>
 
-    <!-- Top controls: All/My + last login -->
     <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4
                 bg-black/40 border border-fuchsia-900/40 rounded-xl px-4 py-3">
       <div class="flex items-center gap-3">
@@ -34,6 +35,7 @@
           All Products
         </a>
 
+        {% if user.is_authenticated %}
         <a href="?filter=my{% if active_category %}&category={{ active_category }}{% endif %}"
             class="px-4 py-2 rounded-md font-semibold transition
                 {% if active_filter == 'my' %}
@@ -43,6 +45,7 @@
                 {% endif %}">
           My Products
         </a>
+        {% endif %}
       </div>
 
       <div class="text-xs md:text-sm text-violet-300">
@@ -50,7 +53,6 @@
       </div>
     </div>
 
-    <!-- Category chips (built from CATEGORY_CHOICES) -->
     <div class="mt-4 flex flex-wrap items-center gap-2">
       {# "All" chip #}
       <a href="?{% if active_filter == 'my' %}filter=my{% endif %}"
@@ -76,97 +78,47 @@
       {% endfor %}
     </div>
 
-    <!-- Product grid / empty state -->
-    {% if object_list %}
-      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {% for p in object_list %}
-          {# ---- Card (quick inline card to avoid extra file editing) ---- #}
-          <article class="rounded-2xl border border-fuchsia-900/40 bg-gradient-to-b
-                          from-[#140028]/80 to-[#0e001e]/80 shadow-xl overflow-hidden">
+    {# ------- Controls: Refresh + States ------- #}
+    <div class="mt-6 mb-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button id="refresh-products-btn" class="px-3 py-2 rounded bg-fuchsia-700 text-white hover:opacity-90">
+          Refresh
+        </button>
 
-            <!-- Thumb -->
-            <div class="aspect-[16/9] bg-slate-900/60">
-              {% if p.thumbnail %}
-                <img src="{{ p.thumbnail }}" alt="{{ p.name }}"
-                      class="w-full h-full object-cover">
-              {% endif %}
-            </div>
+        {# Loading spinner (has opacity/transition classes for fade) #}
+        <div id="product-loading" class="hidden opacity-0 flex flex-col items-center justify-center py-16 text-slate-300 transition-opacity duration-300">
+          <div class="w-10 h-10 border-4 border-fuchsia-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p class="text-sm tracking-wide">Loading products...</p>
+        </div>
 
-            <div class="p-5">
-              <!-- Badges -->
-              <div class="flex items-center gap-2 mb-3">
-                {% if p.is_featured %}
-                  <span class="px-2 py-1 rounded-md text-xs font-semibold bg-fuchsia-600/20 text-fuchsia-300 border border-fuchsia-600/40">Featured</span>
-                {% endif %}
-                <span class="px-2 py-1 rounded-md text-xs font-medium bg-violet-500/15 text-violet-200 border border-violet-700/40">
-                  {{ p.get_category_display }}
-                </span>
-              </div>
-
-              <!-- Title -->
-              <h3 class="text-lg font-semibold text-violet-50 leading-snug">
-                <a href="{% url 'main:detail_object' p.id %}" class="hover:text-fuchsia-300 transition">
-                  {{ p.name }}
-                </a>
-              </h3>
-
-              <!-- Description -->
-              <p class="text-slate-300/90 text-sm mt-2 line-clamp-3">{{ p.description }}</p>
-
-              <!-- Price / rating / stock -->
-              <div class="flex items-center justify-between mt-4 text-sm text-slate-300">
-                <div class="font-semibold text-fuchsia-300">{{ p.price|rupiah }}</div>
-                <div class="flex items-center gap-4">
-                  {% if p.rating %}
-                    <span class="inline-flex items-center gap-1">
-                      ⭐ {{ p.rating }}
-                    </span>
-                  {% endif %}
-                  {% if p.stock is not None %}
-                    <span>Stock: {{ p.stock }}</span>
-                  {% endif %}
-                </div>
-              </div>
-
-              <!-- Actions -->
-              <div class="mt-5 flex items-center justify-between">
-                <a href="{% url 'main:detail_object' p.id %}"
-                    class="text-fuchsia-300 hover:text-fuchsia-200 font-medium">
-                  Detail
-                </a>
-
-                {% if user.is_authenticated and p.user == user %}
-                <div class="flex items-center gap-3 text-sm">
-                  <a href="{% url 'main:edit_object' p.id %}" class="text-slate-300 hover:text-white">Edit</a>
-
-                  <form method="post" action="{% url 'main:delete_object' p.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="text-rose-400 hover:text-rose-300"
-                            onclick="return confirm('Delete this product?')">
-                      Delete
-                    </button>
-                  </form>
-                </div>
-                {% endif %}
-              </div>
-            </div>
-          </article>
-          {# ---- /Card ---- #}
-        {% endfor %}
+        {# Empty and Error placeholders (empty uses the styled original block) #}
+        <div id="product-error" class="hidden text-sm text-rose-400">Failed to load products.</div>
       </div>
-    {% else %}
-      <div class="mt-8 rounded-2xl border border-fuchsia-900/40 bg-black/40 p-10 text-center">
-        <img src="{% static 'image/no-product.png' %}" alt="No products"
-              class="mx-auto w-40 h-40 object-contain opacity-90 mb-4">
-        <h3 class="text-xl font-semibold text-violet-100">No products yet</h3>
-        <p class="text-slate-300 mt-1">Be the first to add an item to the universe.</p>
 
-        <a href="{% url 'main:add_object' %}"
-            class="inline-block mt-6 px-5 py-3 rounded-lg bg-fuchsia-600 text-white font-semibold hover:bg-fuchsia-500 transition">
-          + Add Product
-        </a>
+      <div class="text-xs md:text-sm text-violet-300">
+        <!-- optional: show number of products or other info -->
       </div>
-    {% endif %}
+    </div>
+
+    {# ------- Product list container (server renders initial fragment) ------- #}
+    <div id="product-list-container">
+      {% include 'main/_product_list_fragment.html' %}
+    </div>
+
+    {# ------- Styled Empty block (kept outside the product list so JS can toggle it) ------- #}
+    <div id="product-empty" class="hidden mt-8 rounded-2xl border border-fuchsia-900/40 bg-black/40 p-10 text-center">
+      <img src="{% static 'image/no-product.png' %}" alt="No products"
+            class="mx-auto w-40 h-40 object-contain opacity-90 mb-4">
+      <h3 class="text-xl font-semibold text-violet-100">No products yet</h3>
+      <p class="text-slate-300 mt-1">Be the first to add an item to the universe.</p>
+
+      <a href="{% url 'main:add_object' %}"
+          class="inline-block mt-6 px-5 py-3 rounded-lg bg-fuchsia-600 text-white font-semibold hover:bg-fuchsia-500 transition">
+        + Add Product
+      </a>
+    </div>
+
   </div>
 </div>
 {% endblock content %}
+

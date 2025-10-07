@@ -7,9 +7,12 @@
         <h1 class="text-3xl font-bold text-purple-900 mb-2">Edit Product</h1>
         <p class="text-gray-600 mb-6">Update the product information</p>
 
-        <form method="POST">
+        <form id="edit-product-form" method="POST" action="{% url 'main:ajax_update_product' object.id %}" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
+
+            <div id="form-errors" class="text-red-500 mt-4 text-sm"></div>
+
             <div class="mt-6">
                 <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg font-semibold hover:opacity-90">
                     Update Product
@@ -23,3 +26,46 @@
     </div>
 </div>
 {% endblock %}
+
+
+{% block script %}
+<script>
+$(document).ready(function() {
+    // This code is identical to the create form, just targeting '#edit-product-form'
+    $('#edit-product-form').on('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            
+            success: function(response) {
+                if (response.status === 'success') {
+                    window.location.href = response.redirect_url;
+                }
+            },
+            error: function(xhr) {
+                const errorContainer = $('#form-errors');
+                errorContainer.empty();
+                
+                const errors = xhr.responseJSON.errors;
+                let errorHtml = '<p>Please correct the following errors:</p><ul class="list-disc list-inside mt-2">';
+                for (let field in errors) {
+                    const errorList = errors[field];
+                    errorList.forEach(function(error) {
+                        const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+                        errorHtml += `<li><strong>${fieldName.replace('_', ' ')}:</strong> ${error}</li>`;
+                    });
+                }
+                errorHtml += '</ul>';
+                errorContainer.html(errorHtml);
+            }
+        });
+    });
+});
+</script>
+{% endblock script %}

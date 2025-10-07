@@ -1,12 +1,12 @@
-{# main/card_product.html #}
 {% load currency %}
 
 <article
     class="bg-white/90 backdrop-blur rounded-xl border border-indigo-200/40 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
+
     <!-- Thumbnail -->
     <div class="aspect-[16/10] relative bg-gradient-to-br from-indigo-900 via-purple-900 to-fuchsia-900">
         {% if p.thumbnail %}
-        <img src="{{ p.thumbnail }}" alt="{{ p.name }}" class="w-full h-full object-cover opacity-90">
+        <img src="{{ p.thumbnail }}" alt="{{ p.name }}" class="w-full h-full object-cover opacity-90 select-none">
         {% else %}
         <div class="w-full h-full flex items-center justify-center text-indigo-100 text-sm">
             No image
@@ -14,9 +14,11 @@
         {% endif %}
 
         <!-- Top badges -->
-        <div class="absolute top-3 left-3 flex flex-wrap gap-2">
+        <div class="absolute top-3 left-3 flex flex-wrap gap-2 pointer-events-none">
         {% if p.is_featured %}
-            <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-fuchsia-600 text-white shadow-sm">Featured</span>
+            <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-fuchsia-600 text-white shadow-sm">
+            Featured
+            </span>
         {% endif %}
         {% if p.category %}
             <span class="px-2.5 py-0.5 rounded-md text-xs font-medium bg-indigo-100 text-indigo-800">
@@ -46,16 +48,35 @@
 
         <div class="pt-4 border-t border-slate-200 flex items-center justify-between">
         <a href="{% url 'main:detail_object' p.id %}"
-            class="text-indigo-700 hover:text-fuchsia-700 font-medium text-sm">Detail</a>
+            class="text-indigo-700 hover:text-fuchsia-700 font-medium text-sm">
+            Detail
+        </a>
 
         {% if user.is_authenticated and p.user_id == user.id %}
             <div class="flex items-center gap-3 text-sm">
-            <a href="{% url 'main:edit_object' p.id %}" class="text-slate-600 hover:text-indigo-800">Edit</a>
-            <form method="post" action="{% url 'main:delete_object' p.id %}">
-                {% csrf_token %}
-                <button type="submit" class="text-rose-600 hover:text-rose-700"
-                onclick="return confirm('Delete this product?')">Delete</button>
-            </form>
+
+            <!-- Edit button (opens AJAX modal) -->
+            <button
+                type="button"
+                class="edit-btn text-slate-600 hover:text-indigo-800 transition-colors focus:outline-none"
+                data-edit-url="{% url 'main:get_edit_product_form' p.id %}"
+                aria-label="Edit {{ p.name }}">
+                Edit
+            </button>
+
+            <!-- Delete button: uses inline fallback deleteProduct(this) -->
+            <button
+                type="button"
+                class="delete-btn text-rose-600 hover:text-rose-700 transition-colors relative z-20"
+                data-delete-url="{% url 'main:ajax_delete_product' p.id %}"
+                onclick="deleteProduct(this)"
+                aria-label="Delete {{ p.name }}"
+                >
+                Delete
+            </button>
+
+
+
             </div>
         {% endif %}
         </div>

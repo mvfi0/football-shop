@@ -3,15 +3,19 @@
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-b from-black via-purple-950 to-purple-900 flex flex-col items-center py-10">
-    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 text-gray-800">
         <h1 class="text-3xl font-bold text-purple-900 mb-2">Add Product</h1>
         <p class="text-gray-600 mb-6">Share your gear with the galaxy.</p>
 
-        <form method="POST">
+        <form id="create-product-form" method="POST" action="{% url 'main:ajax_create_product' %}" enctype="multipart/form-data">
             {% csrf_token %}
+            
             {{ form.as_p }}
+
+            <div id="form-errors" class="text-red-500 mt-4 text-sm"></div>
+            
             <div class="mt-6">
-                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg font-semibold hover:opacity-90">
+                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white py-3 px-4 rounded-lg font-semibold hover:opacity-90 transition-opacity">
                     Save Product
                 </button>
             </div>
@@ -23,3 +27,54 @@
     </div>
 </div>
 {% endblock %}
+
+
+{% block script %}
+<script>
+$(document).ready(function() {
+    $('#create-product-form').on('submit', function(event) {
+        // Stop the default browser submission
+        event.preventDefault();
+
+        // Use FormData to handle file uploads correctly
+        const formData = new FormData(this);
+
+        $.ajax({
+            url: $(this).attr('action'), // Get the URL from the form's action attribute
+            type: 'POST',
+            data: formData,
+            processData: false, // Required for FormData
+            contentType: false, // Required for FormData
+            
+            success: function(response) {
+                // If the server sends a success status, redirect the user
+                if (response.status === 'success') {
+                    // Redirect to the product list page
+                    window.location.href = response.redirect_url;
+                }
+            },
+            error: function(xhr) {
+                // If the server sends a 400 error, it's a validation failure
+                const errorContainer = $('#form-errors');
+                errorContainer.empty(); // Clear previous errors
+                
+                const errors = xhr.responseJSON.errors;
+
+                // Loop through the errors and display them on the page
+                let errorHtml = '<p>Please correct the following errors:</p><ul class="list-disc list-inside mt-2">';
+                for (let field in errors) {
+                    const errorList = errors[field];
+                    errorList.forEach(function(error) {
+                        // Capitalize field name for better display
+                        const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+                        errorHtml += `<li><strong>${fieldName.replace('_', ' ')}:</strong> ${error}</li>`;
+                    });
+                }
+                errorHtml += '</ul>';
+                errorContainer.html(errorHtml);
+            }
+        });
+    });
+});
+</script>
+{% endblock script %}
