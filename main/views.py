@@ -123,7 +123,7 @@ def login_user(request):
     else:
         form = AuthenticationForm(request)
     context = {'form': form}
-    return render(request, 'main/login.html', context)
+    return render(request, 'main/login.html', context)  
 
 def logout_user(request):
     logout(request)

@@ -276,6 +276,10 @@ Example:
 
 All notable changes to this project will be documented in this section.
 
+### [1.4.1] - 2025-10-1
+- Visual Update
+  - Added Gradient animation on Universe in the word Sports Universe
+
 ### [1.4.0] - 2025-10-1
 - Updated Branding
   - Football Shop -> Sports Universe
