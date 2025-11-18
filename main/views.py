@@ -99,6 +99,12 @@ def detail_object(request, obj_id):
 # Show all products in XML
 def show_xml(request):
     data = Product.objects.all()
+    
+    if sort_by == 'price_asc':
+        data = data.order_by('price')
+    elif sort_by == 'price_desc':
+        data = data.order_by('-price')
+        
     return HttpResponse(
         serializers.serialize("xml", data),
         content_type="application/xml"

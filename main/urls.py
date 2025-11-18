@@ -38,7 +38,7 @@ urlpatterns = [
     path('ajax/register/', ajax_register, name='ajax_register'),
     
     path('ajax/get_product_form/', get_product_form, name='get_product_form'),
-    path('ajax/get_edit_form/<int:pk>/', get_edit_product_form, name='ajax_get_edit_form'),
+    path('ajax/get_edit_form/<int:pk>/', get_edit_product_form, name='get_edit_product_form'),
     
     path('ajax/product_list/', ajax_product_list, name='ajax_product_list'),
 
