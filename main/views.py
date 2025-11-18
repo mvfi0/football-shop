@@ -12,6 +12,11 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
+import requests
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.html import strip_tags
+import json
+
 
 def object_list(request):
     qs = Product.objects.all()
@@ -300,3 +305,65 @@ def get_edit_product_form(request, pk):
         'action_url': reverse('main:ajax_update_product', kwargs={'pk': pk})
     }
     return render(request, 'main/_product_form.html', context)
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+    
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        # Strip HTML tags to prevent XSS
+        name = strip_tags(data.get("name", ""))
+        price = data.get("price", 0)
+        description = strip_tags(data.get("description", ""))
+        category = data.get("category", "")
+        category_other = data.get("category_other", "")
+        thumbnail = data.get("thumbnail", "")
+        is_featured = data.get("is_featured", False)
+        stock = data.get("stock", 0)
+        rating = data.get("rating", "0")
+        brand = data.get("brand", "")
+
+        user = request.user  # Logged-in user (Cookie-based)
+
+        from main.models import Product  # Adjust the model import
+
+        product = Product(
+            name=name,
+            price=price,
+            description=description,
+            category=category,
+            category_other=category_other,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+            stock=stock,
+            rating=rating,
+            brand=brand,
+            user=user,
+        )
+        product.save()
+
+        return JsonResponse({
+            "status": "success",
+            "message": "Product created successfully!",
+            "product_id": product.pk
+        })
+
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)

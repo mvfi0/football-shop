@@ -6,7 +6,7 @@ from .views import (
     register, edit_object, delete_object, ajax_delete_product,
     ajax_create_product, ajax_update_product, ajax_login,
     ajax_register, get_product_form, get_edit_product_form,
-    ajax_product_list,
+    ajax_product_list, proxy_image, create_product_flutter,
 )
 from main.views import login_user, logout_user
 
@@ -41,5 +41,8 @@ urlpatterns = [
     path('ajax/get_edit_form/<int:pk>/', get_edit_product_form, name='get_edit_product_form'),
     
     path('ajax/product_list/', ajax_product_list, name='ajax_product_list'),
+    
+    path('proxy-image/', proxy_image, name='proxy_image'),
+    path('create-product-flutter/', create_product_flutter, name='create_product_flutter'),
 
 ]
